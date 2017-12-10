@@ -11,11 +11,12 @@ namespace NetChange
         {
             int ep = int.Parse(args[0]);
             thisNode = new Node(ep);
-
+            
             for (int i = 1; i < args.Length; i++)
             {
                 int bmi = int.Parse(args[i]);
-                thisNode.Connect(bmi);
+                if (bmi > ep)
+                    thisNode.Connect(bmi);
             }
 
             Console.Title = "NetChange " + ep;

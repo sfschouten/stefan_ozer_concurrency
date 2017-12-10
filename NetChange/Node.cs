@@ -10,11 +10,25 @@ namespace NetChange
     class Node
     {
         RoutingTable routingTable;
-        Dictionary<int, Connection> nBconns;
-        
+
+        //Connections to neighbours
+        Dictionary<int, Connection> nbConns;
+
+        //Estimate of distance from here to key
+        Dictionary<int, int> D;
+
+        //Prefered neighbours
+        Dictionary<int, int> prefNb;
+
+        //This node's knowledge about distance from key.i1 to key.i2
+        Dictionary<Tuple<int, int>, int> nbDist;
+
         public Node(int portNr)
         {
-            nBconns = new Dictionary<int, Connection>();
+            nbConns = new Dictionary<int, Connection>();
+            D = new Dictionary<int, int>();
+            prefNb = new Dictionary<int, int>();
+            nbDist = new Dictionary<Tuple<int, int>, int>();
 
             TcpListener listener = new TcpListener(IPAddress.Any, portNr);
             listener.Start();
@@ -37,7 +51,7 @@ namespace NetChange
             c.Thread = new Thread(() => ProcessMessages(c));
             c.Thread.Start();
 
-            nBconns.Add(portNr, c);
+            nbConns.Add(portNr, c);
         }
 
         /// <summary>
@@ -45,9 +59,9 @@ namespace NetChange
         /// </summary>
         public void Disconnect(int portNr)
         {
-            nBconns[portNr].Thread.Abort();
-            nBconns[portNr].Close();
-            nBconns.Remove(portNr);
+            nbConns[portNr].Thread.Abort();
+            nbConns[portNr].Close();
+            nbConns.Remove(portNr);
         }
 
         private void ProcessMessages(Connection c)
@@ -81,7 +95,7 @@ namespace NetChange
                 Connection c = new Connection(clientIn, clientOut);
                 c.Thread = new Thread(() => ProcessMessages(c));
                 c.Thread.Start();
-                nBconns.Add(theirPort, c);
+                nbConns.Add(theirPort, c);
             }
         }
     }
