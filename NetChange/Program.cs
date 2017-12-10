@@ -20,6 +20,8 @@ namespace NetChange
             }
 
             Console.Title = "NetChange " + ep;
+
+
         }
 
         static void processInput()
