@@ -5,7 +5,7 @@ std-Disconnect;0;0;0;1
 std-Berichten;0;0;0;1
 std-BerichtNaVerandering;0;0;0;0,5
 std-NetwerkPartitie;0;0;0;1
-Opstarten;0;2;0;4
+Opstarten;0;1;0;4
 Connect;0;0;0;1
 Disconnect;0;0;0;1
 Berichten;0;0;0;1
@@ -19,13 +19,12 @@ Let op: deze berekening is niet het definitieve cijfer. Dit is alleen maar een a
 ------------------------------------
 
 Testcase;Status;Tijd;Omschrijving
-Standaard;Incorrect;12,10;Opstarten netwerk
+Standaard;Incorrect;12,11;Opstarten netwerk
 Random;Incorrect;12,10;Opstarten netwerk
-2xStandaard;Incorrect;6,66;Opstarten netwerk
 
 ------------------------------------
 
-1;Standaard;Incorrect;12,10;Opstarten netwerk
+1;Standaard;Incorrect;12,11;Opstarten netwerk
 Test 1 - Standaard
 
 Fout bij opzetten netwerk - de routing-tabel is incorrect.
@@ -216,135 +215,6 @@ Process 55507:
 > R
 
 Process 55508:
-> R
-
-------------------------------------
-
-3;2xStandaard;Incorrect;6,66;Opstarten netwerk
-Test 3 - 2xStandaard
-
-Fout bij opzetten netwerk - de routing-tabel is incorrect.
-Het programma ziet de verbinding van 55500 naar 55501 niet.
-Het programma ziet de verbinding van 55500 naar 55502 niet.
-Het programma ziet de verbinding van 55500 naar 55503 niet.
-Het programma ziet de verbinding van 55500 naar 55504 niet.
-Het programma ziet de verbinding van 55500 naar 55505 niet.
-Het programma ziet de verbinding van 55501 naar 55500 niet.
-Het programma ziet de verbinding van 55501 naar 55502 niet.
-Het programma ziet de verbinding van 55501 naar 55503 niet.
-Het programma ziet de verbinding van 55501 naar 55504 niet.
-Het programma ziet de verbinding van 55501 naar 55505 niet.
-Het programma ziet de verbinding van 55502 naar 55500 niet.
-Het programma ziet de verbinding van 55502 naar 55501 niet.
-Het programma ziet de verbinding van 55502 naar 55503 niet.
-Het programma ziet de verbinding van 55502 naar 55504 niet.
-Het programma ziet de verbinding van 55502 naar 55505 niet.
-Het programma ziet de verbinding van 55503 naar 55500 niet.
-Het programma ziet de verbinding van 55503 naar 55501 niet.
-Het programma ziet de verbinding van 55503 naar 55502 niet.
-Het programma ziet de verbinding van 55503 naar 55504 niet.
-Het programma ziet de verbinding van 55503 naar 55505 niet.
-Het programma ziet de verbinding van 55504 naar 55500 niet.
-Het programma ziet de verbinding van 55504 naar 55501 niet.
-Het programma ziet de verbinding van 55504 naar 55502 niet.
-Het programma ziet de verbinding van 55504 naar 55503 niet.
-Het programma ziet de verbinding van 55504 naar 55505 niet.
-Het programma ziet de verbinding van 55505 naar 55500 niet.
-Het programma ziet de verbinding van 55505 naar 55501 niet.
-Het programma ziet de verbinding van 55505 naar 55502 niet.
-Het programma ziet de verbinding van 55505 naar 55503 niet.
-Het programma ziet de verbinding van 55505 naar 55504 niet.
-Het programma ziet de verbinding van 55506 naar 55507 niet.
-Het programma ziet de verbinding van 55506 naar 55508 niet.
-Het programma ziet de verbinding van 55506 naar 55509 niet.
-Het programma ziet de verbinding van 55506 naar 55510 niet.
-Het programma ziet de verbinding van 55506 naar 55511 niet.
-Het programma ziet de verbinding van 55507 naar 55506 niet.
-Het programma ziet de verbinding van 55507 naar 55508 niet.
-Het programma ziet de verbinding van 55507 naar 55509 niet.
-Het programma ziet de verbinding van 55507 naar 55510 niet.
-Het programma ziet de verbinding van 55507 naar 55511 niet.
-Het programma ziet de verbinding van 55508 naar 55506 niet.
-Het programma ziet de verbinding van 55508 naar 55507 niet.
-Het programma ziet de verbinding van 55508 naar 55509 niet.
-Het programma ziet de verbinding van 55508 naar 55510 niet.
-Het programma ziet de verbinding van 55508 naar 55511 niet.
-Het programma ziet de verbinding van 55509 naar 55506 niet.
-Het programma ziet de verbinding van 55509 naar 55507 niet.
-Het programma ziet de verbinding van 55509 naar 55508 niet.
-Het programma ziet de verbinding van 55509 naar 55510 niet.
-Het programma ziet de verbinding van 55509 naar 55511 niet.
-Het programma ziet de verbinding van 55510 naar 55506 niet.
-Het programma ziet de verbinding van 55510 naar 55507 niet.
-Het programma ziet de verbinding van 55510 naar 55508 niet.
-Het programma ziet de verbinding van 55510 naar 55509 niet.
-Het programma ziet de verbinding van 55510 naar 55511 niet.
-Het programma ziet de verbinding van 55511 naar 55506 niet.
-Het programma ziet de verbinding van 55511 naar 55507 niet.
-Het programma ziet de verbinding van 55511 naar 55508 niet.
-Het programma ziet de verbinding van 55511 naar 55509 niet.
-Het programma ziet de verbinding van 55511 naar 55510 niet.
-
-Log
-start NetChange.exe 55500 55501 55502
-start NetChange.exe 55501 55500 55502
-start NetChange.exe 55502 55500 55501 55503 55504
-start NetChange.exe 55503 55502 55505
-start NetChange.exe 55504 55502 55505
-start NetChange.exe 55505 55503 55504
-start NetChange.exe 55506 55507 55508
-start NetChange.exe 55507 55506 55508
-start NetChange.exe 55508 55506 55507 55509 55510
-start NetChange.exe 55509 55508 55511
-start NetChange.exe 55510 55508 55511
-start NetChange.exe 55511 55509 55510
-55500 > R
-55501 > R
-55502 > R
-55503 > R
-55504 > R
-55505 > R
-55506 > R
-55507 > R
-55508 > R
-55509 > R
-55510 > R
-55511 > R
-
-Process 55500:
-> R
-
-Process 55501:
-> R
-
-Process 55502:
-> R
-
-Process 55503:
-> R
-
-Process 55504:
-> R
-
-Process 55505:
-> R
-
-Process 55506:
-> R
-
-Process 55507:
-> R
-
-Process 55508:
-> R
-
-Process 55509:
-> R
-
-Process 55510:
-> R
-
-Process 55511:
 > R
 
 Microsoft Windows NT 6.2.9200.0 (x64)

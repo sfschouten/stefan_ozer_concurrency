@@ -13,22 +13,12 @@ namespace NetChange
 
         //Connections to neighbours
         Dictionary<int, Connection> nbConns;
-
-        //Estimate of distance from here to key
-        Dictionary<int, int> D;
-
-        //Prefered neighbours
-        Dictionary<int, int> prefNb;
-
-        //This node's knowledge about distance from key.i1 to key.i2
-        Dictionary<Tuple<int, int>, int> nbDist;
-
+        
         public Node(int portNr)
         {
             nbConns = new Dictionary<int, Connection>();
-            D = new Dictionary<int, int>();
-            prefNb = new Dictionary<int, int>();
-            nbDist = new Dictionary<Tuple<int, int>, int>();
+
+            routingTable = new RoutingTable();
 
             TcpListener listener = new TcpListener(IPAddress.Any, portNr);
             listener.Start();
@@ -45,13 +35,25 @@ namespace NetChange
         /// </summary>
         public void Connect(int portNr)
         {
-            Connection c = new Connection(portNr);
+            Connection c = null;
+            while (c == null)
+            {
+                try
+                {
+                    c = new Connection(portNr);
+                }
+                catch (SocketException e)
+                {
+                    Thread.Sleep(5);
+                }
+            }
 
             // Start reading
             c.Thread = new Thread(() => ProcessMessages(c));
             c.Thread.Start();
 
-            nbConns.Add(portNr, c);
+            lock(nbConns)
+                nbConns.Add(portNr, c);
         }
 
         /// <summary>
@@ -61,7 +63,9 @@ namespace NetChange
         {
             nbConns[portNr].Thread.Abort();
             nbConns[portNr].Close();
-            nbConns.Remove(portNr);
+
+            lock (nbConns)
+                nbConns.Remove(portNr);
         }
 
         private void ProcessMessages(Connection c)
@@ -69,12 +73,25 @@ namespace NetChange
             try
             {
                 while (true)
-                    Console.WriteLine(c.Read.ReadLine());
+                {
+                    string line = c.Read.ReadLine();
+                    Console.WriteLine(line);
+                    
+                    //Process updates from neighbours
+                    if (line[0] == '<')
+                    {
+                        switch (line[1])
+                        {
+                            case 'd':
+                                //routingTable
+                                break;
+                        }
+                    }
+                }
             }
             catch // Connection broken
-            { 
-
-            } 
+            {
+            }
         }
 
         private void AcceptConnections(TcpListener handle)
@@ -95,7 +112,9 @@ namespace NetChange
                 Connection c = new Connection(clientIn, clientOut);
                 c.Thread = new Thread(() => ProcessMessages(c));
                 c.Thread.Start();
-                nbConns.Add(theirPort, c);
+
+                lock (nbConns)
+                    nbConns.Add(theirPort, c);
             }
         }
     }

@@ -16,7 +16,9 @@ namespace NetChange
             {
                 int bmi = int.Parse(args[i]);
                 if (bmi > ep)
+                {
                     thisNode.Connect(bmi);
+                }
             }
 
             Console.Title = "NetChange " + ep;
