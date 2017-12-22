@@ -19,12 +19,12 @@ Let op: deze berekening is niet het definitieve cijfer. Dit is alleen maar een a
 ------------------------------------
 
 Testcase;Status;Tijd;Omschrijving
-Standaard;Incorrect;14,51;Opstarten netwerk
-Random;Incorrect;7,72;Opstarten netwerk
+Standaard;Incorrect;14,75;Opstarten netwerk
+Random;Incorrect;17,59;Opstarten netwerk
 
 ------------------------------------
 
-1;Standaard;Incorrect;14,51;Opstarten netwerk
+1;Standaard;Incorrect;14,75;Opstarten netwerk
 Test 1 - Standaard
 
 Fout bij opzetten netwerk - de routing-tabel is incorrect.
@@ -73,25 +73,25 @@ start NetChange.exe 55505 55503 55504
 55504 > R
 55505 > R
 55500 < 55500 0 local
+55502 < 55502 0 local
 55500 < 55501 1 55501
+55502 < 55500 1 55500
 55501 < 55501 0 local
 55500 < 55502 1 55502
-55502 < 55502 0 local
-55501 < 55500 1 55500
-55502 < 55500 1 55500
-55501 < 55502 1 55502
 55502 < 55503 1 55503
+55501 < 55500 1 55500
 55502 < 55504 1 55504
-55503 < 55503 0 local
+55501 < 55502 1 55502
 55502 < 55501 1 55501
-55503 < 55502 1 55502
-55503 < 55505 1 55505
-55504 < 55504 0 local
 55505 < 55505 0 local
-55504 < 55502 1 55502
-55504 < 55505 1 55505
 55505 < 55503 1 55503
+55503 < 55503 0 local
 55505 < 55504 1 55504
+55504 < 55504 0 local
+55503 < 55502 1 55502
+55504 < 55502 1 55502
+55503 < 55505 1 55505
+55504 < 55505 1 55505
 
 Process 55500:
 Verbonden: 55501
@@ -147,78 +147,44 @@ Verbonden: 55504
 
 ------------------------------------
 
-2;Random;Incorrect;7,72;Opstarten netwerk
+2;Random;Incorrect;17,59;Opstarten netwerk
 Test 2 - Random
 
 Fout bij opzetten netwerk - de routing-tabel is incorrect.
-Het programma ziet de verbinding van 55500 naar 55501 niet.
-Het programma ziet de verbinding van 55500 naar 55502 niet.
-Het programma ziet de verbinding van 55500 naar 55503 niet.
 Het programma ziet de verbinding van 55500 naar 55504 niet.
 Het programma ziet de verbinding van 55500 naar 55505 niet.
-Het programma ziet de verbinding van 55500 naar 55506 niet.
-Het programma ziet de verbinding van 55500 naar 55507 niet.
 Het programma ziet de verbinding van 55500 naar 55508 niet.
-Het programma ziet de verbinding van 55501 naar 55500 niet.
-Het programma ziet de verbinding van 55501 naar 55502 niet.
 Het programma ziet de verbinding van 55501 naar 55503 niet.
-Het programma ziet de verbinding van 55501 naar 55504 niet.
-Het programma ziet de verbinding van 55501 naar 55505 niet.
-Het programma ziet de verbinding van 55501 naar 55506 niet.
 Het programma ziet de verbinding van 55501 naar 55507 niet.
 Het programma ziet de verbinding van 55501 naar 55508 niet.
-Het programma ziet de verbinding van 55502 naar 55500 niet.
-Het programma ziet de verbinding van 55502 naar 55501 niet.
 Het programma ziet de verbinding van 55502 naar 55503 niet.
-Het programma ziet de verbinding van 55502 naar 55504 niet.
 Het programma ziet de verbinding van 55502 naar 55505 niet.
 Het programma ziet de verbinding van 55502 naar 55506 niet.
 Het programma ziet de verbinding van 55502 naar 55507 niet.
 Het programma ziet de verbinding van 55502 naar 55508 niet.
-Het programma ziet de verbinding van 55503 naar 55500 niet.
 Het programma ziet de verbinding van 55503 naar 55501 niet.
 Het programma ziet de verbinding van 55503 naar 55502 niet.
-Het programma ziet de verbinding van 55503 naar 55504 niet.
-Het programma ziet de verbinding van 55503 naar 55505 niet.
-Het programma ziet de verbinding van 55503 naar 55506 niet.
 Het programma ziet de verbinding van 55503 naar 55507 niet.
-Het programma ziet de verbinding van 55503 naar 55508 niet.
 Het programma ziet de verbinding van 55504 naar 55500 niet.
-Het programma ziet de verbinding van 55504 naar 55501 niet.
-Het programma ziet de verbinding van 55504 naar 55502 niet.
-Het programma ziet de verbinding van 55504 naar 55503 niet.
 Het programma ziet de verbinding van 55504 naar 55505 niet.
-Het programma ziet de verbinding van 55504 naar 55506 niet.
 Het programma ziet de verbinding van 55504 naar 55507 niet.
 Het programma ziet de verbinding van 55504 naar 55508 niet.
 Het programma ziet de verbinding van 55505 naar 55500 niet.
-Het programma ziet de verbinding van 55505 naar 55501 niet.
 Het programma ziet de verbinding van 55505 naar 55502 niet.
-Het programma ziet de verbinding van 55505 naar 55503 niet.
 Het programma ziet de verbinding van 55505 naar 55504 niet.
-Het programma ziet de verbinding van 55505 naar 55506 niet.
 Het programma ziet de verbinding van 55505 naar 55507 niet.
 Het programma ziet de verbinding van 55505 naar 55508 niet.
-Het programma ziet de verbinding van 55506 naar 55500 niet.
-Het programma ziet de verbinding van 55506 naar 55501 niet.
 Het programma ziet de verbinding van 55506 naar 55502 niet.
-Het programma ziet de verbinding van 55506 naar 55503 niet.
-Het programma ziet de verbinding van 55506 naar 55504 niet.
-Het programma ziet de verbinding van 55506 naar 55505 niet.
-Het programma ziet de verbinding van 55506 naar 55507 niet.
 Het programma ziet de verbinding van 55506 naar 55508 niet.
-Het programma ziet de verbinding van 55507 naar 55500 niet.
 Het programma ziet de verbinding van 55507 naar 55501 niet.
 Het programma ziet de verbinding van 55507 naar 55502 niet.
 Het programma ziet de verbinding van 55507 naar 55503 niet.
 Het programma ziet de verbinding van 55507 naar 55504 niet.
 Het programma ziet de verbinding van 55507 naar 55505 niet.
-Het programma ziet de verbinding van 55507 naar 55506 niet.
 Het programma ziet de verbinding van 55507 naar 55508 niet.
 Het programma ziet de verbinding van 55508 naar 55500 niet.
 Het programma ziet de verbinding van 55508 naar 55501 niet.
 Het programma ziet de verbinding van 55508 naar 55502 niet.
-Het programma ziet de verbinding van 55508 naar 55503 niet.
 Het programma ziet de verbinding van 55508 naar 55504 niet.
 Het programma ziet de verbinding van 55508 naar 55505 niet.
 Het programma ziet de verbinding van 55508 naar 55506 niet.
@@ -275,8 +241,51 @@ start NetChange.exe 55508 55503
 55504 > R
 55505 > R
 55506 > R
+55501 < 55501 0 local
 55507 > R
+55502 < 55502 0 local
 55508 > R
+55505 < 55505 0 local
+55504 < 55504 0 local
+55500 < 55500 0 local
+55503 < 55503 0 local
+55501 < 55500 1 55500
+55508 < 55508 0 local
+55507 < 55507 0 local
+55507 < 55500 1 55500
+55508 < 55503 1 55503
+55500 < 55501 1 55501
+55504 < 55501 1 55501
+55503 < 55500 1 55500
+55505 < 55501 1 55501
+55506 < 55506 0 local
+55507 < 55506 1 55506
+55502 < 55500 1 55500
+55500 < 55502 1 55502
+55504 < 55502 1 55502
+55500 < 55503 1 55503
+55500 < 55506 1 55506
+55500 < 55507 1 55507
+55503 < 55508 1 55508
+55503 < 55505 1 55505
+55501 < 55504 1 55504
+55506 < 55500 1 55500
+55502 < 55501 1 55501
+55505 < 55503 1 55503
+55503 < 55504 1 55504
+55501 < 55505 1 55505
+55504 < 55503 1 55503
+55502 < 55504 1 55504
+55505 < 55506 1 55506
+55506 < 55501 1 55501
+55501 < 55502 1 55502
+55503 < 55506 1 55506
+55506 < 55507 1 55507
+55504 < 55506 1 55506
+55501 < 55506 1 55506
+55506 < 55503 1 55503
+55506 < 55504 1 55504
+55506 < 55505 1 55505
 
 Process 55500:
 Verbonden: 55501
@@ -285,6 +294,12 @@ Verbonden: 55503
 Verbonden: 55506
 Verbonden: 55507
 > R
+55500 0 local
+55501 1 55501
+55502 1 55502
+55503 1 55503
+55506 1 55506
+55507 1 55507
 
 Process 55501:
 Verbonden: 55500
@@ -293,12 +308,22 @@ Verbonden: 55505
 Verbonden: 55502
 Verbonden: 55506
 > R
+55501 0 local
+55500 1 55500
+55504 1 55504
+55505 1 55505
+55502 1 55502
+55506 1 55506
 
 Process 55502:
 Verbonden: 55500
 Verbonden: 55501
 Verbonden: 55504
 > R
+55502 0 local
+55500 1 55500
+55501 1 55501
+55504 1 55504
 
 Process 55503:
 Verbonden: 55500
@@ -307,6 +332,12 @@ Verbonden: 55505
 Verbonden: 55504
 Verbonden: 55506
 > R
+55503 0 local
+55500 1 55500
+55508 1 55508
+55505 1 55505
+55504 1 55504
+55506 1 55506
 
 Process 55504:
 Verbonden: 55501
@@ -314,12 +345,21 @@ Verbonden: 55502
 Verbonden: 55503
 Verbonden: 55506
 > R
+55504 0 local
+55501 1 55501
+55502 1 55502
+55503 1 55503
+55506 1 55506
 
 Process 55505:
 Verbonden: 55501
 Verbonden: 55503
 Verbonden: 55506
 > R
+55505 0 local
+55501 1 55501
+55503 1 55503
+55506 1 55506
 
 Process 55506:
 Verbonden: 55500
@@ -329,15 +369,27 @@ Verbonden: 55503
 Verbonden: 55504
 Verbonden: 55505
 > R
+55506 0 local
+55500 1 55500
+55501 1 55501
+55507 1 55507
+55503 1 55503
+55504 1 55504
+55505 1 55505
 
 Process 55507:
 Verbonden: 55500
 Verbonden: 55506
 > R
+55507 0 local
+55500 1 55500
+55506 1 55506
 
 Process 55508:
 Verbonden: 55503
 > R
+55508 0 local
+55503 1 55503
 
 Microsoft Windows NT 6.2.9200.0 (x64)
 .NET version: 4.0.30319.42000

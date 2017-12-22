@@ -33,6 +33,7 @@ namespace NetChange
         {
             int port;
             char c = (char)Console.Read();
+            Console.Read();
             switch (c)
             {
                 case 'R':
