@@ -22,11 +22,13 @@ namespace NetChange
             Write.AutoFlush = true;
         }
 
-        public Connection(StreamReader reader, StreamWriter writer, int port)
+        public Connection(TcpClient client)
         {
-            read = reader;
-            write = writer;
-            this.port = port;
+            this.client = client;
+            read = new StreamReader(client.GetStream());
+            write = new StreamWriter(client.GetStream());
+            write.AutoFlush = true;
+            port = int.Parse(read.ReadLine().Split()[1]);
         }
 
         public void SendMessage(string msg)
@@ -50,6 +52,7 @@ namespace NetChange
 
         public void Close()
         {
+            Closing = true;
             client.Close();
         }
     }

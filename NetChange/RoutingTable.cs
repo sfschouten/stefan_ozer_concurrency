@@ -50,23 +50,34 @@ namespace NetChange
 
         public void RemoveNeighbour(int nbPort)
         {
-            nbDist.Remove(Tuple.Create(nbPort, ourPortNr));
-            nbDist.Remove(Tuple.Create(ourPortNr, nbPort));
-            nbDist.Remove(Tuple.Create(nbPort, nbPort));
-
             Console.WriteLine("//Removing Neighbour");
+
+            List<Tuple<int, int>> toRemove = new List<Tuple<int, int>>();
+            foreach (Tuple<int, int> key in nbDist.Keys)
+                if (key.Item1 == nbPort)
+                    toRemove.Add(key);
+
+            foreach (Tuple<int, int> key in toRemove)
+            {
+                nbDist.Remove(key);
+                Recompute(key.Item2);
+            }
+                
+
+            nbDist.Remove(Tuple.Create(ourPortNr, nbPort));
+
             Recompute(nbPort);
         }
 
         public void Update(int from, int to, int newDist)
         {
             nbDist[Tuple.Create(from, to)] = newDist;
-            nbDist[Tuple.Create(to, from)] = newDist;
+            //nbDist[Tuple.Create(to, from)] = newDist;
             Recompute(to);
-            Recompute(from);
+            //Recompute(from);
         }
 
-        public void Recompute(int v)
+        private void Recompute(int v)
         {
             if (v == ourPortNr)
             {
@@ -90,7 +101,13 @@ namespace NetChange
                     }
                 }
 
-                if (!D.ContainsKey(v) || !prefNb.ContainsKey(v) || D[v] != closestD + 1 || prefNb[v] != closest)
+                if (closest == -1)
+                {
+                    Console.WriteLine("Onbereikbaar: " + v);
+                    D.Remove(v);
+                    prefNb.Remove(v);
+                }
+                else if (!D.ContainsKey(v) || !prefNb.ContainsKey(v) || D[v] != closestD + 1 || prefNb[v] != closest)
                 {
                     prefNb[v] = closest;
                     D[v] = closestD + 1;

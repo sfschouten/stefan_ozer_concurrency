@@ -32,11 +32,11 @@ namespace NetChange
 
         private void NewConnection(Connection c)
         {
-            lock (nbConns)
-                nbConns.Add(c.Port, c);
-
-            lock (routingTable)
+            lock (this)
+            {
+                nbConns[c.Port] = c;
                 routingTable.AddNeighbour(c.Port);
+            }
 
             Console.WriteLine("Verbonden: " + c.Port);
         }
@@ -73,30 +73,17 @@ namespace NetChange
         /// </summary>
         public void CmdDisconnect(int portNr)
         {
-            if (!nbConns.ContainsKey(portNr))
+            lock (this)
             {
-                Console.WriteLine("Poort " + portNr + " is niet bekend");
-                return;
+                if (!nbConns.ContainsKey(portNr))
+                {
+                    Console.WriteLine("Poort " + portNr + " is niet bekend");
+                    return;
+                }
             }
-
-            Console.WriteLine("Verbroken: " + portNr);
-
-            nbConns[portNr].Closing = true;
-
+            
             nbConns[portNr].Close();
             nbConns[portNr].Thread.Join();
-            
-
-            Disconnect(portNr);
-        }
-
-        private void Disconnect(int portNr)
-        {
-            lock (nbConns)
-                nbConns.Remove(portNr);
-
-            lock (routingTable)
-                routingTable.RemoveNeighbour(portNr);
         }
 
         private void ProcessMessages(Connection c)
@@ -105,8 +92,8 @@ namespace NetChange
             {
                 while (!c.Closing)
                 {
-                    string line = c.Read.ReadLine();
-                    //Console.WriteLine("//" + line);
+                    string line = "";
+                    line = c.Read.ReadLine();
 
                     if (line.StartsWith("!"))
                     {
@@ -118,7 +105,8 @@ namespace NetChange
                             case "!mydist":
                                 int to = int.Parse(args[1]);
                                 int newDist = int.Parse(args[2]);
-                                lock (routingTable)
+
+                                lock (this)
                                     routingTable.Update(c.Port, to, newDist);
                                 break;
                             case "!msg":
@@ -129,9 +117,12 @@ namespace NetChange
                                 }
                                 else
                                 {
-                                    int prefNb = routingTable.PrefNb[rcvr];
-                                    Console.WriteLine("Bericht voor " + rcvr + " doorgestuurd naar " + prefNb);
-                                    SendMessage(rcvr, args[2], prefNb);
+                                    lock (this)
+                                    {
+                                        int prefNb = routingTable.PrefNb[rcvr];
+                                        Console.WriteLine("Bericht voor " + rcvr + " doorgestuurd naar " + prefNb);
+                                        SendMessage(rcvr, args[2], prefNb);
+                                    }
                                 }
                                 break;
                             default:
@@ -141,10 +132,17 @@ namespace NetChange
                     }
                 }
             }
-            catch (Exception e) // Connection broken
+            catch (Exception e) //when (e is IOException || e is NullReferenceException )// Connection broken
             {
-                Disconnect(c.Port);
+                Console.WriteLine("//" + e.Message);
             }
+
+            lock (this)
+            {
+                nbConns.Remove(c.Port);
+                routingTable.RemoveNeighbour(c.Port);
+            }
+            Console.WriteLine("Verbroken: " + c.Port);
         }
 
         private void AcceptConnections(TcpListener handle)
@@ -152,16 +150,8 @@ namespace NetChange
             while (true)
             {
                 TcpClient client = handle.AcceptTcpClient();
-                StreamReader clientIn = new StreamReader(client.GetStream());
-                StreamWriter clientOut = new StreamWriter(client.GetStream());
-                clientOut.AutoFlush = true;
-
                 
-                int theirPort = int.Parse(clientIn.ReadLine().Split()[1]);
-                //Console.WriteLine("//Accepting connection from " + theirPort);
-
-                // Start reading
-                Connection c = new Connection(clientIn, clientOut, theirPort);
+                Connection c = new Connection(client);
                 c.Thread = new Thread(() => ProcessMessages(c));
                 c.Thread.Start();
 
@@ -171,20 +161,24 @@ namespace NetChange
         
         public void Broadcast(string msg)
         {
-            lock(nbConns)
+            lock(this)
                 foreach (Connection c in nbConns.Values)
                     c.SendMessage(msg);
         }
 
         public void SendMessage(int port, string msg)
         {
-            int prefNb = routingTable.PrefNb[port];
-            SendMessage(port, msg, prefNb);
+            lock (this)
+            {
+                int prefNb = routingTable.PrefNb[port];
+                SendMessage(port, msg, prefNb);
+            }
         }
 
         private void SendMessage(int port, string msg, int via)
         {
-            nbConns[via].SendMessage("!msg " + port + " " + msg);
+            lock (this)
+                nbConns[via].SendMessage("!msg " + port + " " + msg);
         }
     }
 }

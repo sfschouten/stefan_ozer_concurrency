@@ -37,12 +37,12 @@ namespace NetChange
             switch (c)
             {
                 case 'R':
-                    Console.Write(thisNode.RoutingTable.ToString());
+                    lock (thisNode)
+                        Console.Write(thisNode.RoutingTable.ToString());
                     break;
                 case 'B':
                     port = int.Parse(readArg());
                     string message = Console.ReadLine();
-                    //Console.WriteLine("//Sending message" + message);
                     thisNode.SendMessage(port, message);
                     return;
                 case 'C':
