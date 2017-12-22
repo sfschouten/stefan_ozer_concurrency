@@ -11,6 +11,8 @@ namespace NetChange
         private TcpClient client;
         private int port;
 
+        public bool Closing { get; set; }
+
         public Connection(int port)
         {
             this.port = port;

@@ -6,6 +6,8 @@ namespace NetChange
 {
     class RoutingTable
     {
+        Node myNode;
+
         //Estimate of distance from here to key
         Dictionary<int, int> D;
 
@@ -21,8 +23,14 @@ namespace NetChange
             get { return ourPortNr; }
         }
 
-        public RoutingTable(int ourPortNr)
+        public Dictionary<int, int> PrefNb
         {
+            get { return prefNb; }
+        }
+
+        public RoutingTable(Node node, int ourPortNr)
+        {
+            myNode = node;
             this.ourPortNr = ourPortNr;
             D = new Dictionary<int, int>();
             prefNb = new Dictionary<int, int>();
@@ -32,12 +40,30 @@ namespace NetChange
 
         public void AddNeighbour(int nbPort)
         {
-            D[nbPort] = 1;
-            prefNb.Add(nbPort, nbPort);
             nbDist[Tuple.Create(nbPort, nbPort)] = 0;
-            nbDist[Tuple.Create(ourPortNr, nbPort)] = 1;
             nbDist[Tuple.Create(nbPort, ourPortNr)] = 1;
             Recompute(nbPort);
+
+            foreach(KeyValuePair<int, int> kvp in D)
+                myNode.Broadcast("!mydist " + kvp.Key + " " + kvp.Value);
+        }
+
+        public void RemoveNeighbour(int nbPort)
+        {
+            nbDist.Remove(Tuple.Create(nbPort, ourPortNr));
+            nbDist.Remove(Tuple.Create(ourPortNr, nbPort));
+            nbDist.Remove(Tuple.Create(nbPort, nbPort));
+
+            Console.WriteLine("//Removing Neighbour");
+            Recompute(nbPort);
+        }
+
+        public void Update(int from, int to, int newDist)
+        {
+            nbDist[Tuple.Create(from, to)] = newDist;
+            nbDist[Tuple.Create(to, from)] = newDist;
+            Recompute(to);
+            Recompute(from);
         }
 
         public void Recompute(int v)
@@ -64,8 +90,14 @@ namespace NetChange
                     }
                 }
 
-                prefNb[v] = closest;
-                D[v] = closestD + 1;
+                if (!D.ContainsKey(v) || !prefNb.ContainsKey(v) || D[v] != closestD + 1 || prefNb[v] != closest)
+                {
+                    prefNb[v] = closest;
+                    D[v] = closestD + 1;
+
+                    Console.WriteLine("Afstand naar " + v + " is nu " + D[v] + " via " + prefNb[v]);
+                    myNode.Broadcast("!mydist " + v + " " + D[v]);
+                }
             }
         }
 

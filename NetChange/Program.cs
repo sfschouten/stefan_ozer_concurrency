@@ -41,18 +41,20 @@ namespace NetChange
                     break;
                 case 'B':
                     port = int.Parse(readArg());
-                    string message = readArg();
-
-                    break;
+                    string message = Console.ReadLine();
+                    //Console.WriteLine("//Sending message" + message);
+                    thisNode.SendMessage(port, message);
+                    return;
                 case 'C':
                     port = int.Parse(readArg());
                     thisNode.Connect(port);
                     break;
                 case 'D':
                     port = int.Parse(readArg());
-                    thisNode.Disconnect(port);
+                    thisNode.CmdDisconnect(port);
                     break;
             }
+            Console.ReadLine();
         }
 
 
@@ -60,7 +62,7 @@ namespace NetChange
         {
             StringBuilder result = new StringBuilder();
             char next = (char)Console.Read();
-            while (next != ' ')
+            while (next > ' ')
             {
                 result.Append(next);
                 next = (char)Console.Read();

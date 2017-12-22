@@ -13,12 +13,12 @@ namespace NetChange
 
         //Connections to neighbours
         Dictionary<int, Connection> nbConns;
-
+        
         public Node(int portNr)
         {
             nbConns = new Dictionary<int, Connection>();
 
-            routingTable = new RoutingTable(portNr);
+            routingTable = new RoutingTable(this, portNr);
 
             TcpListener listener = new TcpListener(IPAddress.Any, portNr);
             listener.Start();
@@ -62,48 +62,88 @@ namespace NetChange
             // Start reading
             c.Thread = new Thread(() => ProcessMessages(c));
             c.Thread.Start();
+            
+            c.SendMessage("!myport: " + routingTable.OurPortNr);
 
             NewConnection(c);
-
-            c.SendMessage("MyPort: " + routingTable.OurPortNr);
         }
 
         /// <summary>
         /// Disconnect from process that is listening on portNr
         /// </summary>
-        public void Disconnect(int portNr)
+        public void CmdDisconnect(int portNr)
         {
-            nbConns[portNr].Thread.Abort();
-            nbConns[portNr].Close();
+            if (!nbConns.ContainsKey(portNr))
+            {
+                Console.WriteLine("Poort " + portNr + " is niet bekend");
+                return;
+            }
 
+            Console.WriteLine("Verbroken: " + portNr);
+
+            nbConns[portNr].Closing = true;
+
+            nbConns[portNr].Close();
+            nbConns[portNr].Thread.Join();
+            
+
+            Disconnect(portNr);
+        }
+
+        private void Disconnect(int portNr)
+        {
             lock (nbConns)
                 nbConns.Remove(portNr);
+
+            lock (routingTable)
+                routingTable.RemoveNeighbour(portNr);
         }
 
         private void ProcessMessages(Connection c)
         {
             try
             {
-                while (true)
+                while (!c.Closing)
                 {
                     string line = c.Read.ReadLine();
-                    Console.WriteLine(line);
-                    
-                    //Process updates from neighbours
-                    if (line[0] == '<')
+                    //Console.WriteLine("//" + line);
+
+                    if (line.StartsWith("!"))
                     {
-                        switch (line[1])
+                        string[] args = line.Split(' ');
+
+                        //Process updates from neighbours
+                        switch (args[0])
                         {
-                            case 'd':
-                                //routingTable
+                            case "!mydist":
+                                int to = int.Parse(args[1]);
+                                int newDist = int.Parse(args[2]);
+                                lock (routingTable)
+                                    routingTable.Update(c.Port, to, newDist);
+                                break;
+                            case "!msg":
+                                int rcvr = int.Parse(args[1]);
+                                if (routingTable.OurPortNr == rcvr)
+                                {
+                                    Console.WriteLine(args[2]);
+                                }
+                                else
+                                {
+                                    int prefNb = routingTable.PrefNb[rcvr];
+                                    Console.WriteLine("Bericht voor " + rcvr + " doorgestuurd naar " + prefNb);
+                                    SendMessage(rcvr, args[2], prefNb);
+                                }
+                                break;
+                            default:
+                                Console.WriteLine("//Shouldn't see this.");
                                 break;
                         }
                     }
                 }
             }
-            catch // Connection broken
+            catch (Exception e) // Connection broken
             {
-                Console.WriteLine("Verbroken: " + c.Port);
+                Disconnect(c.Port);
             }
         }
 
@@ -127,6 +167,24 @@ namespace NetChange
 
                 NewConnection(c);
             }
+        }
+        
+        public void Broadcast(string msg)
+        {
+            lock(nbConns)
+                foreach (Connection c in nbConns.Values)
+                    c.SendMessage(msg);
+        }
+
+        public void SendMessage(int port, string msg)
+        {
+            int prefNb = routingTable.PrefNb[port];
+            SendMessage(port, msg, prefNb);
+        }
+
+        private void SendMessage(int port, string msg, int via)
+        {
+            nbConns[via].SendMessage("!msg " + port + " " + msg);
         }
     }
 }
