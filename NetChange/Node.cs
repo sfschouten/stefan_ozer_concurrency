@@ -13,12 +13,12 @@ namespace NetChange
 
         //Connections to neighbours
         Dictionary<int, Connection> nbConns;
-        
+
         public Node(int portNr)
         {
             nbConns = new Dictionary<int, Connection>();
 
-            routingTable = new RoutingTable();
+            routingTable = new RoutingTable(portNr);
 
             TcpListener listener = new TcpListener(IPAddress.Any, portNr);
             listener.Start();
@@ -28,6 +28,17 @@ namespace NetChange
         public RoutingTable RoutingTable
         {
             get { return routingTable; }
+        }
+
+        private void NewConnection(Connection c)
+        {
+            lock (nbConns)
+                nbConns.Add(c.Port, c);
+
+            lock (routingTable)
+                routingTable.AddNeighbour(c.Port);
+
+            Console.WriteLine("Verbonden: " + c.Port);
         }
 
         /// <summary>
@@ -52,8 +63,9 @@ namespace NetChange
             c.Thread = new Thread(() => ProcessMessages(c));
             c.Thread.Start();
 
-            lock(nbConns)
-                nbConns.Add(portNr, c);
+            NewConnection(c);
+
+            c.SendMessage("MyPort: " + routingTable.OurPortNr);
         }
 
         /// <summary>
@@ -91,6 +103,7 @@ namespace NetChange
             }
             catch // Connection broken
             {
+                Console.WriteLine("Verbroken: " + c.Port);
             }
         }
 
@@ -103,18 +116,16 @@ namespace NetChange
                 StreamWriter clientOut = new StreamWriter(client.GetStream());
                 clientOut.AutoFlush = true;
 
-                // 
+                
                 int theirPort = int.Parse(clientIn.ReadLine().Split()[1]);
-
-                //Console.WriteLine("Client maakt verbinding: " + zijnPoort);
+                //Console.WriteLine("//Accepting connection from " + theirPort);
 
                 // Start reading
-                Connection c = new Connection(clientIn, clientOut);
+                Connection c = new Connection(clientIn, clientOut, theirPort);
                 c.Thread = new Thread(() => ProcessMessages(c));
                 c.Thread.Start();
 
-                lock (nbConns)
-                    nbConns.Add(theirPort, c);
+                NewConnection(c);
             }
         }
     }

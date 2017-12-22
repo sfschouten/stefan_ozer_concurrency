@@ -19,45 +19,31 @@ Let op: deze berekening is niet het definitieve cijfer. Dit is alleen maar een a
 ------------------------------------
 
 Testcase;Status;Tijd;Omschrijving
-Standaard;Incorrect;12,11;Opstarten netwerk
-Random;Incorrect;12,10;Opstarten netwerk
+Standaard;Incorrect;14,51;Opstarten netwerk
+Random;Incorrect;7,72;Opstarten netwerk
 
 ------------------------------------
 
-1;Standaard;Incorrect;12,11;Opstarten netwerk
+1;Standaard;Incorrect;14,51;Opstarten netwerk
 Test 1 - Standaard
 
 Fout bij opzetten netwerk - de routing-tabel is incorrect.
-Het programma ziet de verbinding van 55500 naar 55501 niet.
-Het programma ziet de verbinding van 55500 naar 55502 niet.
 Het programma ziet de verbinding van 55500 naar 55503 niet.
 Het programma ziet de verbinding van 55500 naar 55504 niet.
 Het programma ziet de verbinding van 55500 naar 55505 niet.
-Het programma ziet de verbinding van 55501 naar 55500 niet.
-Het programma ziet de verbinding van 55501 naar 55502 niet.
 Het programma ziet de verbinding van 55501 naar 55503 niet.
 Het programma ziet de verbinding van 55501 naar 55504 niet.
 Het programma ziet de verbinding van 55501 naar 55505 niet.
-Het programma ziet de verbinding van 55502 naar 55500 niet.
-Het programma ziet de verbinding van 55502 naar 55501 niet.
-Het programma ziet de verbinding van 55502 naar 55503 niet.
-Het programma ziet de verbinding van 55502 naar 55504 niet.
 Het programma ziet de verbinding van 55502 naar 55505 niet.
 Het programma ziet de verbinding van 55503 naar 55500 niet.
 Het programma ziet de verbinding van 55503 naar 55501 niet.
-Het programma ziet de verbinding van 55503 naar 55502 niet.
 Het programma ziet de verbinding van 55503 naar 55504 niet.
-Het programma ziet de verbinding van 55503 naar 55505 niet.
 Het programma ziet de verbinding van 55504 naar 55500 niet.
 Het programma ziet de verbinding van 55504 naar 55501 niet.
-Het programma ziet de verbinding van 55504 naar 55502 niet.
 Het programma ziet de verbinding van 55504 naar 55503 niet.
-Het programma ziet de verbinding van 55504 naar 55505 niet.
 Het programma ziet de verbinding van 55505 naar 55500 niet.
 Het programma ziet de verbinding van 55505 naar 55501 niet.
 Het programma ziet de verbinding van 55505 naar 55502 niet.
-Het programma ziet de verbinding van 55505 naar 55503 niet.
-Het programma ziet de verbinding van 55505 naar 55504 niet.
 
 Log
 start NetChange.exe 55500 55501 55502
@@ -66,34 +52,102 @@ start NetChange.exe 55502 55500 55501 55503 55504
 start NetChange.exe 55503 55502 55505
 start NetChange.exe 55504 55502 55505
 start NetChange.exe 55505 55503 55504
+55501 < Verbonden: 55500
+55500 < Verbonden: 55501
+55502 < Verbonden: 55500
+55500 < Verbonden: 55502
+55503 < Verbonden: 55502
+55502 < Verbonden: 55503
+55504 < Verbonden: 55502
+55502 < Verbonden: 55504
+55505 < Verbonden: 55503
+55503 < Verbonden: 55505
+55502 < Verbonden: 55501
+55501 < Verbonden: 55502
+55505 < Verbonden: 55504
+55504 < Verbonden: 55505
 55500 > R
 55501 > R
 55502 > R
 55503 > R
 55504 > R
 55505 > R
+55500 < 55500 0 local
+55500 < 55501 1 55501
+55501 < 55501 0 local
+55500 < 55502 1 55502
+55502 < 55502 0 local
+55501 < 55500 1 55500
+55502 < 55500 1 55500
+55501 < 55502 1 55502
+55502 < 55503 1 55503
+55502 < 55504 1 55504
+55503 < 55503 0 local
+55502 < 55501 1 55501
+55503 < 55502 1 55502
+55503 < 55505 1 55505
+55504 < 55504 0 local
+55505 < 55505 0 local
+55504 < 55502 1 55502
+55504 < 55505 1 55505
+55505 < 55503 1 55503
+55505 < 55504 1 55504
 
 Process 55500:
+Verbonden: 55501
+Verbonden: 55502
 > R
+55500 0 local
+55501 1 55501
+55502 1 55502
 
 Process 55501:
+Verbonden: 55500
+Verbonden: 55502
 > R
+55501 0 local
+55500 1 55500
+55502 1 55502
 
 Process 55502:
+Verbonden: 55500
+Verbonden: 55503
+Verbonden: 55504
+Verbonden: 55501
 > R
+55502 0 local
+55500 1 55500
+55503 1 55503
+55504 1 55504
+55501 1 55501
 
 Process 55503:
+Verbonden: 55502
+Verbonden: 55505
 > R
+55503 0 local
+55502 1 55502
+55505 1 55505
 
 Process 55504:
+Verbonden: 55502
+Verbonden: 55505
 > R
+55504 0 local
+55502 1 55502
+55505 1 55505
 
 Process 55505:
+Verbonden: 55503
+Verbonden: 55504
 > R
+55505 0 local
+55503 1 55503
+55504 1 55504
 
 ------------------------------------
 
-2;Random;Incorrect;12,10;Opstarten netwerk
+2;Random;Incorrect;7,72;Opstarten netwerk
 Test 2 - Random
 
 Fout bij opzetten netwerk - de routing-tabel is incorrect.
@@ -180,6 +234,40 @@ start NetChange.exe 55505 55501 55503 55506
 start NetChange.exe 55506 55500 55501 55503 55504 55505 55507
 start NetChange.exe 55507 55500 55506
 start NetChange.exe 55508 55503
+55501 < Verbonden: 55500
+55500 < Verbonden: 55501
+55502 < Verbonden: 55500
+55500 < Verbonden: 55502
+55503 < Verbonden: 55500
+55500 < Verbonden: 55503
+55504 < Verbonden: 55501
+55501 < Verbonden: 55504
+55505 < Verbonden: 55501
+55501 < Verbonden: 55505
+55506 < Verbonden: 55500
+55500 < Verbonden: 55506
+55507 < Verbonden: 55500
+55500 < Verbonden: 55507
+55508 < Verbonden: 55503
+55503 < Verbonden: 55508
+55502 < Verbonden: 55501
+55501 < Verbonden: 55502
+55504 < Verbonden: 55502
+55502 < Verbonden: 55504
+55505 < Verbonden: 55503
+55503 < Verbonden: 55505
+55506 < Verbonden: 55501
+55501 < Verbonden: 55506
+55507 < Verbonden: 55506
+55506 < Verbonden: 55507
+55504 < Verbonden: 55503
+55503 < Verbonden: 55504
+55506 < Verbonden: 55503
+55503 < Verbonden: 55506
+55506 < Verbonden: 55504
+55504 < Verbonden: 55506
+55506 < Verbonden: 55505
+55505 < Verbonden: 55506
 55500 > R
 55501 > R
 55502 > R
@@ -191,30 +279,64 @@ start NetChange.exe 55508 55503
 55508 > R
 
 Process 55500:
+Verbonden: 55501
+Verbonden: 55502
+Verbonden: 55503
+Verbonden: 55506
+Verbonden: 55507
 > R
 
 Process 55501:
+Verbonden: 55500
+Verbonden: 55504
+Verbonden: 55505
+Verbonden: 55502
+Verbonden: 55506
 > R
 
 Process 55502:
+Verbonden: 55500
+Verbonden: 55501
+Verbonden: 55504
 > R
 
 Process 55503:
+Verbonden: 55500
+Verbonden: 55508
+Verbonden: 55505
+Verbonden: 55504
+Verbonden: 55506
 > R
 
 Process 55504:
+Verbonden: 55501
+Verbonden: 55502
+Verbonden: 55503
+Verbonden: 55506
 > R
 
 Process 55505:
+Verbonden: 55501
+Verbonden: 55503
+Verbonden: 55506
 > R
 
 Process 55506:
+Verbonden: 55500
+Verbonden: 55501
+Verbonden: 55507
+Verbonden: 55503
+Verbonden: 55504
+Verbonden: 55505
 > R
 
 Process 55507:
+Verbonden: 55500
+Verbonden: 55506
 > R
 
 Process 55508:
+Verbonden: 55503
 > R
 
 Microsoft Windows NT 6.2.9200.0 (x64)

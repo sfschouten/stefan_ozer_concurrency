@@ -9,19 +9,27 @@ namespace NetChange
         private StreamReader read;
         private StreamWriter write;
         private TcpClient client;
+        private int port;
 
         public Connection(int port)
         {
+            this.port = port;
             client = new TcpClient("localhost", port);
             read = new StreamReader(client.GetStream());
             write = new StreamWriter(client.GetStream());
             Write.AutoFlush = true;
         }
 
-        public Connection(StreamReader reader, StreamWriter writer)
+        public Connection(StreamReader reader, StreamWriter writer, int port)
         {
             read = reader;
             write = writer;
+            this.port = port;
+        }
+
+        public void SendMessage(string msg)
+        {
+            write.WriteLine(msg);
         }
 
         public Thread Thread { get; set; }
@@ -32,6 +40,10 @@ namespace NetChange
         public StreamWriter Write
         {
             get { return write; }
+        }
+        public int Port
+        {
+            get { return port; }
         }
 
         public void Close()

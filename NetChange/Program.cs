@@ -15,7 +15,7 @@ namespace NetChange
             for (int i = 1; i < args.Length; i++)
             {
                 int bmi = int.Parse(args[i]);
-                if (bmi > ep)
+                if (ep > bmi)
                 {
                     thisNode.Connect(bmi);
                 }
@@ -23,7 +23,10 @@ namespace NetChange
 
             Console.Title = "NetChange " + ep;
 
-
+            while (true)
+            {
+                processInput();
+            }
         }
 
         static void processInput()
