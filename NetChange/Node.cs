@@ -135,14 +135,14 @@ namespace NetChange
                                 lock (this)
                                     routingTable.Update(c.Port, to, newDist);
                                 break;
-                            case "!msg"://process message that needs to be printed when the message is meant for this port
+                            case "!msg"://receive or forward message 
                                 int rcvr = int.Parse(args[1]);
                                 if (routingTable.OurPortNr == rcvr)
-                                {
+                                { //We are recipient: print message.
                                     Console.WriteLine(args[2]);
                                 }
-                                else// or the message needs to be forwarded to another port, if so send the message to the preffered neighbor.
-                                {
+                                else
+                                { //Message needs to be forwarded, so send the message to the preffered neighbor.
                                     lock (this)
                                     {
                                         int prefNb = routingTable.PrefNb[rcvr];
@@ -151,7 +151,7 @@ namespace NetChange
                                     }
                                 }
                                 break;
-                            default://debug case
+                            default: //debug case
                                 Console.WriteLine("//Shouldn't see this.");
                                 break;
                         }
@@ -198,7 +198,7 @@ namespace NetChange
                     c.SendMessage(msg);
         }
         /// <summary>
-        /// Send message to a port
+        /// Send message to prefered neighbour for recipient.
         /// </summary>
         public void SendMessage(int port, string msg)
         {
@@ -209,7 +209,7 @@ namespace NetChange
             }
         }
         /// <summary>
-        /// Helpermethod for sending messages
+        /// Send message to 'port' through 'via'
         /// </summary>
         private void SendMessage(int port, string msg, int via)
         {

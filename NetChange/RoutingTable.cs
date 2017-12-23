@@ -60,7 +60,7 @@ namespace NetChange
                 if (key.Item1 == nbPort)
                     toRemove.Add(key);
             
-            //everytime a neighbour is removed, recompute the table.
+            //for every distance we had stored from the neighbour to another node, recompute the table.
             foreach (Tuple<int, int> key in toRemove)
             {
                 nbDist.Remove(key);

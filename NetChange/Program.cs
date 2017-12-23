@@ -9,7 +9,7 @@ namespace NetChange
 
         static void Main(string[] args)
         {
-            //currentProcesses own portnumber
+            //currentProcess' own portnumber
             int ep = int.Parse(args[0]);
             thisNode = new Node(ep);
             
@@ -58,9 +58,9 @@ namespace NetChange
                     port = int.Parse(readArg());
                     thisNode.CmdDisconnect(port);
                     break;
-                case 'Q'://Disconnect from all processes and dont accept new connections
+                case 'Q'://Quit the program.
                     thisNode.Quit();
-                    thisNode = null;
+                    thisNode = null; //Causes while to end and program to terminate.
                     return;
             }
             Console.ReadLine();
