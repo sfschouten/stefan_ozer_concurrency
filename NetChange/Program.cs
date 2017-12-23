@@ -23,7 +23,8 @@ namespace NetChange
 
             Console.Title = "NetChange " + ep;
 
-            while (true)
+            //Do cmdline processing on default thread.
+            while (thisNode != null)
             {
                 processInput();
             }
@@ -53,6 +54,10 @@ namespace NetChange
                     port = int.Parse(readArg());
                     thisNode.CmdDisconnect(port);
                     break;
+                case 'Q':
+                    thisNode.Quit();
+                    thisNode = null;
+                    return;
             }
             Console.ReadLine();
         }

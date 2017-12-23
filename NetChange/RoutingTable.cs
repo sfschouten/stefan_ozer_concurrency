@@ -6,6 +6,7 @@ namespace NetChange
 {
     class RoutingTable
     {
+        //The node that this routingtable belongs to.
         Node myNode;
 
         //Estimate of distance from here to key
@@ -18,16 +19,7 @@ namespace NetChange
         Dictionary<Tuple<int, int>, int> nbDist;
 
         int ourPortNr;
-        public int OurPortNr
-        {
-            get { return ourPortNr; }
-        }
-
-        public Dictionary<int, int> PrefNb
-        {
-            get { return prefNb; }
-        }
-
+        
         public RoutingTable(Node node, int ourPortNr)
         {
             myNode = node;
@@ -36,6 +28,15 @@ namespace NetChange
             prefNb = new Dictionary<int, int>();
             nbDist = new Dictionary<Tuple<int, int>, int>();
             Recompute(ourPortNr);
+        }
+
+        public int OurPortNr
+        {
+            get { return ourPortNr; }
+        }
+        public Dictionary<int, int> PrefNb
+        {
+            get { return prefNb; }
         }
 
         public void AddNeighbour(int nbPort)
@@ -50,39 +51,34 @@ namespace NetChange
 
         public void RemoveNeighbour(int nbPort)
         {
-            Console.WriteLine("//Removing Neighbour");
-
+            //Remove all distances that are from the neighbour.
             List<Tuple<int, int>> toRemove = new List<Tuple<int, int>>();
             foreach (Tuple<int, int> key in nbDist.Keys)
                 if (key.Item1 == nbPort)
                     toRemove.Add(key);
-
+            
             foreach (Tuple<int, int> key in toRemove)
             {
                 nbDist.Remove(key);
                 Recompute(key.Item2);
             }
-                
 
             nbDist.Remove(Tuple.Create(ourPortNr, nbPort));
-
             Recompute(nbPort);
         }
 
         public void Update(int from, int to, int newDist)
         {
             nbDist[Tuple.Create(from, to)] = newDist;
-            //nbDist[Tuple.Create(to, from)] = newDist;
             Recompute(to);
-            //Recompute(from);
         }
 
         private void Recompute(int v)
         {
             if (v == ourPortNr)
-            {
+            { //If this is us, distance is 0
                 D[v] = 0;
-                prefNb[v] = -1;
+                prefNb[v] = -2;
             }
             else
             {
@@ -93,7 +89,7 @@ namespace NetChange
                     if (kvp.Key.Item2 == v)
                     {
                         int d = kvp.Value;
-                        if (d < closestD)
+                        if (d < D.Count && d < closestD)
                         {
                             closest = kvp.Key.Item1;
                             closestD = d;
@@ -101,18 +97,23 @@ namespace NetChange
                     }
                 }
 
-                if (closest == -1)
-                {
-                    Console.WriteLine("Onbereikbaar: " + v);
-                    D.Remove(v);
-                    prefNb.Remove(v);
-                }
-                else if (!D.ContainsKey(v) || !prefNb.ContainsKey(v) || D[v] != closestD + 1 || prefNb[v] != closest)
+                int newD = closestD + 1; //If nothing found will overflow to int.MinValue
+                
+                if (!D.ContainsKey(v) || !prefNb.ContainsKey(v) || (newD > 0 && D[v] != newD) || prefNb[v] != closest)
                 {
                     prefNb[v] = closest;
-                    D[v] = closestD + 1;
 
-                    Console.WriteLine("Afstand naar " + v + " is nu " + D[v] + " via " + prefNb[v]);
+                    if (closest == -1)
+                    {
+                        D[v] = D.Count;
+                        Console.WriteLine("Onbereikbaar: " + v);
+                    }
+                    else
+                    {
+                        D[v] = newD;
+                        Console.WriteLine("Afstand naar " + v + " is nu " + D[v] + " via " + prefNb[v]);
+                    }
+                    
                     myNode.Broadcast("!mydist " + v + " " + D[v]);
                 }
             }
@@ -123,7 +124,8 @@ namespace NetChange
             StringBuilder sb = new StringBuilder();
 
             foreach(KeyValuePair<int, int> kvp in D)
-                sb.AppendLine(kvp.Key + " " + kvp.Value + " " + (prefNb[kvp.Key] == -1 ? "local" : prefNb[kvp.Key].ToString()));
+                if (prefNb[kvp.Key] != -1)
+                    sb.AppendLine(kvp.Key + " " + kvp.Value + " " + (prefNb[kvp.Key] == -2 ? "local" : prefNb[kvp.Key].ToString()));
 
             return sb.ToString();
         }

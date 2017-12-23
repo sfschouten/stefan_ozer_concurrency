@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -13,7 +12,10 @@ namespace NetChange
 
         //Connections to neighbours
         Dictionary<int, Connection> nbConns;
-        
+
+        bool acceptingConnections;
+        Thread acceptingThread;
+
         public Node(int portNr)
         {
             nbConns = new Dictionary<int, Connection>();
@@ -22,12 +24,22 @@ namespace NetChange
 
             TcpListener listener = new TcpListener(IPAddress.Any, portNr);
             listener.Start();
-            new Thread(() => AcceptConnections(listener)).Start();
+            acceptingThread = new Thread(() => AcceptConnections(listener));
+            acceptingThread.Start();
         }
 
         public RoutingTable RoutingTable
         {
             get { return routingTable; }
+        }
+        
+        public void Quit()
+        {
+            foreach (int p in nbConns.Keys)
+                CmdDisconnect(p);
+
+            acceptingConnections = false;
+            acceptingThread.Join();
         }
 
         private void NewConnection(Connection c)
@@ -132,9 +144,9 @@ namespace NetChange
                     }
                 }
             }
-            catch (Exception e) //when (e is IOException || e is NullReferenceException )// Connection broken
+            catch (Exception e) // Connection broken
             {
-                Console.WriteLine("//" + e.Message);
+               // Console.WriteLine("//" + e.Message);
             }
 
             lock (this)
@@ -147,7 +159,7 @@ namespace NetChange
 
         private void AcceptConnections(TcpListener handle)
         {
-            while (true)
+            while (acceptingConnections)
             {
                 TcpClient client = handle.AcceptTcpClient();
                 
