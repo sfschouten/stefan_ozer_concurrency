@@ -13,7 +13,7 @@ namespace NetChange
         //Connections to neighbours
         Dictionary<int, Connection> nbConns;
 
-        bool acceptingConnections;
+        bool acceptingConnections = true;
         //thread accepting connections
         Thread acceptingThread;
 
