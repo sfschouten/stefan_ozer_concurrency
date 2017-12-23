@@ -9,11 +9,14 @@ namespace NetChange
 
         static void Main(string[] args)
         {
+            //currentProcesses own portnumber
             int ep = int.Parse(args[0]);
             thisNode = new Node(ep);
             
+            //Read the other arguments, wich are the portnumbers of our neighbours
             for (int i = 1; i < args.Length; i++)
             {
+                // neigbour portnumber
                 int bmi = int.Parse(args[i]);
                 if (ep > bmi)
                 {
@@ -33,28 +36,29 @@ namespace NetChange
         static void processInput()
         {
             int port;
+            //Read input argument
             char c = (char)Console.Read();
             Console.Read();
             switch (c)
             {
-                case 'R':
+                case 'R'://Print the routing table
                     lock (thisNode)
                         Console.Write(thisNode.RoutingTable.ToString());
                     break;
-                case 'B':
+                case 'B'://Send message to the process running on a port
                     port = int.Parse(readArg());
                     string message = Console.ReadLine();
                     thisNode.SendMessage(port, message);
                     return;
-                case 'C':
+                case 'C'://Connect to a new process on a port
                     port = int.Parse(readArg());
                     thisNode.Connect(port);
                     break;
-                case 'D':
+                case 'D'://Disconnect from the process on a port
                     port = int.Parse(readArg());
                     thisNode.CmdDisconnect(port);
                     break;
-                case 'Q':
+                case 'Q'://Disconnect from all processes and dont accept new connections
                     thisNode.Quit();
                     thisNode = null;
                     return;
@@ -62,7 +66,7 @@ namespace NetChange
             Console.ReadLine();
         }
 
-
+        //Method used to read the rest of the arguments after the first character.
         static string readArg()
         {
             StringBuilder result = new StringBuilder();

@@ -39,6 +39,9 @@ namespace NetChange
             get { return prefNb; }
         }
 
+        /// <summary>
+        /// Initialise neighbour in the table vars and recompute the table
+        /// </summary>
         public void AddNeighbour(int nbPort)
         {
             nbDist[Tuple.Create(nbPort, nbPort)] = 0;
@@ -57,6 +60,7 @@ namespace NetChange
                 if (key.Item1 == nbPort)
                     toRemove.Add(key);
             
+            //everytime a neighbour is removed, recompute the table.
             foreach (Tuple<int, int> key in toRemove)
             {
                 nbDist.Remove(key);
@@ -67,6 +71,7 @@ namespace NetChange
             Recompute(nbPort);
         }
 
+        //add new distance, recompute the table.
         public void Update(int from, int to, int newDist)
         {
             nbDist[Tuple.Create(from, to)] = newDist;
@@ -119,6 +124,9 @@ namespace NetChange
             }
         }
 
+        /// <summary>
+        /// Print the current table
+        /// </summary>
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();

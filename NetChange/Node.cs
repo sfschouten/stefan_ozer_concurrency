@@ -14,16 +14,22 @@ namespace NetChange
         Dictionary<int, Connection> nbConns;
 
         bool acceptingConnections;
+        //thread accepting connections
         Thread acceptingThread;
 
         public Node(int portNr)
         {
+            //initialise Dictionary that holds neigbour connections
             nbConns = new Dictionary<int, Connection>();
 
+            //initialise routingtable
             routingTable = new RoutingTable(this, portNr);
 
+            //create listener and start it
             TcpListener listener = new TcpListener(IPAddress.Any, portNr);
             listener.Start();
+            
+            //create thread and start thread
             acceptingThread = new Thread(() => AcceptConnections(listener));
             acceptingThread.Start();
         }
@@ -32,7 +38,10 @@ namespace NetChange
         {
             get { return routingTable; }
         }
-        
+
+        /// <summary>
+        /// Disconnect from all connections and accept no further connections
+        /// </summary>
         public void Quit()
         {
             foreach (int p in nbConns.Keys)
@@ -41,7 +50,9 @@ namespace NetChange
             acceptingConnections = false;
             acceptingThread.Join();
         }
-
+        /// <summary>
+        /// Add new connection
+        /// </summary>
         private void NewConnection(Connection c)
         {
             lock (this)
@@ -63,10 +74,12 @@ namespace NetChange
             {
                 try
                 {
+                    //connect with portNr
                     c = new Connection(portNr);
                 }
                 catch (SocketException e)
                 {
+                    //try again later
                     Thread.Sleep(5);
                 }
             }
@@ -94,6 +107,7 @@ namespace NetChange
                 }
             }
             
+            //close the connection and thread
             nbConns[portNr].Close();
             nbConns[portNr].Thread.Join();
         }
@@ -114,20 +128,20 @@ namespace NetChange
                         //Process updates from neighbours
                         switch (args[0])
                         {
-                            case "!mydist":
+                            case "!mydist"://process message related to updating the routing table
                                 int to = int.Parse(args[1]);
                                 int newDist = int.Parse(args[2]);
 
                                 lock (this)
                                     routingTable.Update(c.Port, to, newDist);
                                 break;
-                            case "!msg":
+                            case "!msg"://process message that needs to be printed when the message is meant for this port
                                 int rcvr = int.Parse(args[1]);
                                 if (routingTable.OurPortNr == rcvr)
                                 {
                                     Console.WriteLine(args[2]);
                                 }
-                                else
+                                else// or the message needs to be forwarded to another port, if so send the message to the preffered neighbor.
                                 {
                                     lock (this)
                                     {
@@ -137,7 +151,7 @@ namespace NetChange
                                     }
                                 }
                                 break;
-                            default:
+                            default://debug case
                                 Console.WriteLine("//Shouldn't see this.");
                                 break;
                         }
@@ -157,12 +171,16 @@ namespace NetChange
             Console.WriteLine("Verbroken: " + c.Port);
         }
 
+        /// <summary>
+        /// Method for accepting new incoming connections
+        /// </summary>
         private void AcceptConnections(TcpListener handle)
         {
             while (acceptingConnections)
             {
                 TcpClient client = handle.AcceptTcpClient();
                 
+                // make new connection and start a new thread for this connection
                 Connection c = new Connection(client);
                 c.Thread = new Thread(() => ProcessMessages(c));
                 c.Thread.Start();
@@ -170,14 +188,18 @@ namespace NetChange
                 NewConnection(c);
             }
         }
-        
+        /// <summary>
+        /// Send messages to all neighbors
+        /// </summary>
         public void Broadcast(string msg)
         {
             lock(this)
                 foreach (Connection c in nbConns.Values)
                     c.SendMessage(msg);
         }
-
+        /// <summary>
+        /// Send message to a port
+        /// </summary>
         public void SendMessage(int port, string msg)
         {
             lock (this)
@@ -186,7 +208,9 @@ namespace NetChange
                 SendMessage(port, msg, prefNb);
             }
         }
-
+        /// <summary>
+        /// Helpermethod for sending messages
+        /// </summary>
         private void SendMessage(int port, string msg, int via)
         {
             lock (this)

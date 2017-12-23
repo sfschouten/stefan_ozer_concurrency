@@ -22,6 +22,9 @@ namespace NetChange
             Write.AutoFlush = true;
         }
 
+        /// <summary>
+        /// Make new connection
+        /// </summary>
         public Connection(TcpClient client)
         {
             this.client = client;
