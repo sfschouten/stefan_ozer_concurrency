@@ -2,15 +2,12 @@
 
 void bit_set(__global uint* p, uint pw, uint x, uint y)
 {
-	uint i = y * pw + (x >> 5U);
-	uint bit = (1U << (x & 31U));
-	p[i] = p[i] | bit;
+	p[y * pw + (x >> 5)] |= (1U << (x & 31U));
 }
 
 uint get_bit(__global uint* p, uint pw, uint x, uint y)
 {
-	uint v = p[y * pw + (x >> 5U)];
-	return (v >> (x & 31U)) & 1U;
+	return (p[y * pw + (x >> 5)] >> (x & 31U)) & 1U;
 }
 
 #ifdef GLINTEROP
@@ -25,6 +22,8 @@ __kernel void simulateAndDraw(__global int* a,	      __global uint* ptrn, __glob
 	uint y = get_global_id(1);
 	int i = x + w * y;
 	
+
+
 	//Simulate
 	/*
 	if (x >= 1 && x < w - 1 && y >= 1 && y < ph - 1)
@@ -57,7 +56,7 @@ __kernel void simulateAndDraw(__global int* a,	      __global uint* ptrn, __glob
 
 #ifdef GLINTEROP
 		int2 pos = (int2)(x, y);
-		write_imagef(a, pos, (float4)(col * (1.0f / 16.0f), 0.0f));
+		write_imagef(a, pos, (float4)(col * (1.0f / 16.0f), 1.0f));
 #else
 		int r = (int)clamp(16.0f * col.x, 0.f, 255.f);
 		int g = (int)clamp(16.0f * col.y, 0.f, 255.f);
