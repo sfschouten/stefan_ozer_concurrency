@@ -15,7 +15,6 @@ __kernel void simulateAndDraw(__global int* a,	      __global uint* ptrn, __glob
 
 	uint idx = get_global_id(0);
 	uint idy = get_global_id(1);
-	int id = idx + pw * idy;
 	
 	if (idx < pw && idy < ph)
 	{
@@ -57,11 +56,11 @@ __kernel void simulateAndDraw(__global int* a,	      __global uint* ptrn, __glob
 				int r = (int)clamp(16.0f * col.x, 0.f, 255.f);
 				int g = (int)clamp(16.0f * col.y, 0.f, 255.f);
 				int b = (int)clamp(16.0f * col.z, 0.f, 255.f);
-				a[id] = (r << 16) + (g << 8) + b;
+				a[x + w * y] = (r << 16) + (g << 8) + b;
 	#endif
 			}
 		}
 
-		ptrn[id] = v;
+		ptrn[idx + pw * idy] = v;
 	}
 }

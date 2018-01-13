@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using OpenTK.Graphics.OpenGL;
+using System;
 
 namespace GameOfLife
 {
@@ -26,7 +27,9 @@ namespace GameOfLife
         bool tock = false;
 
         public Surface screen;
+
         Stopwatch timer = new Stopwatch();
+        int generation = 0;
 
         public void Init()
         {
@@ -47,6 +50,7 @@ namespace GameOfLife
 
         public void Tick()
         {
+            timer.Restart();
             GL.Finish();
             
             screen.Clear(0);
@@ -73,9 +77,9 @@ namespace GameOfLife
             kernel.SetArgument(5, res);
 
             // execute kernel
-            long[] workSize = { rle.W + (32 - rle.W % 32),
+            long[] workSize = { rle.W + (4 - rle.W % 4),
                                 rle.H + (4 - rle.H % 4)     };
-            long[] localSize = { 32, 4 };
+            long[] localSize = { 4, 4 };
             if (GLInterop)
             {
                 // INTEROP PATH:
@@ -103,11 +107,13 @@ namespace GameOfLife
                 // plot pixels using the data on the host
                 for (int y = 0; y < res.y; y++) for (int x = 0; x < res.x; x++)
                 {
-                    screen.pixels[x + y * res.x] = buffer[x + y * (int)rle.W];
+                    screen.pixels[x + y * res.x] = buffer[x + y * res.x];
                 }
             }
 
             tock = !tock;
+
+            Console.WriteLine("generation " + generation++ + ": " + timer.ElapsedMilliseconds + "ms");
         }
 
         public void Render()
