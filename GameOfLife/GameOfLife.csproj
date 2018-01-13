@@ -75,6 +75,7 @@
   <ItemGroup>
     <Compile Include="game.cs" />
     <Compile Include="opencl.cs" />
+    <Compile Include="RLEFile.cs" />
     <Compile Include="surface.cs" />
     <Compile Include="template.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -84,6 +85,7 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="fractalprogram.cl" />
     <None Include="program.cl" />
   </ItemGroup>
   <ItemGroup>

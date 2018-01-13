@@ -1,45 +1,81 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using System.Runtime.InteropServices;
-using Cloo;
-using OpenTK.Graphics;
+﻿using System.Diagnostics;
 using OpenTK.Graphics.OpenGL;
 
 namespace GameOfLife
 {
     class Game
     {
-        // when GLInterop is set to true, the fractal is rendered directly to an OpenGL texture
-        bool GLInterop = false;
+        // when GLInterop is set to true, we render directly to an OpenGL texture
+        const bool GLInterop = true;
+
+        static readonly int2 res = new int2(512, 512);
+
         // load the OpenCL program; this creates the OpenCL context
         static OpenCLProgram ocl = new OpenCLProgram("../../program.cl");
+
         // find the kernel named 'device_function' in the program
-        OpenCLKernel kernel = new OpenCLKernel(ocl, "device_function");
-        // create a regular buffer; by default this resides on both the host and the device
-        OpenCLBuffer<int> buffer = new OpenCLBuffer<int>(ocl, 512 * 512);
-        // create an OpenGL texture to which OpenCL can send data
-        OpenCLImage<int> image = new OpenCLImage<int>(ocl, 512, 512);
+        OpenCLKernel kernel = new OpenCLKernel(ocl, "simulateAndDraw");
+
+        RLEFile rle;
+        OpenCLBuffer<uint> pattern1;
+        OpenCLBuffer<uint> pattern2;
+        
+        OpenCLBuffer<int> buffer;
+        OpenCLImage<int> image;
+
+        bool tock = false;
+
         public Surface screen;
         Stopwatch timer = new Stopwatch();
-        float t = 21.5f;
+
         public void Init()
         {
-            // nothing here
+            rle = new RLEFile("../../data/turing_js_r.rle");
+            pattern1 = new OpenCLBuffer<uint>(ocl, (int)(rle.W * rle.H));
+            pattern2 = rle.ToCLBuffer(ocl);
+            pattern2.CopyToDevice();
+
+            if (GLInterop)
+                //create an OpenGL texture to which OpenCL can send data
+                image = new OpenCLImage<int>(ocl, res.x, res.y);
+            else
+                //create a regular buffer; by default this resides on both the host and the device
+                buffer = new OpenCLBuffer<int>(ocl, res.x * res.y);
         }
+
         public void Tick()
         {
             GL.Finish();
-            // clear the screen
+            
             screen.Clear(0);
-            // do opencl stuff
-            if (GLInterop) kernel.SetArgument(0, image);
-            else kernel.SetArgument(0, buffer);
-            kernel.SetArgument(1, t);
-            t += 0.1f;
+            
+            //Set image argument
+            if (GLInterop)
+                kernel.SetArgument(0, image);
+            else
+                kernel.SetArgument(0, buffer);
+
+            if (!tock)//tick
+            {
+                for (int i = 0; i < rle.W * rle.H; i++) pattern1[i] = 0U;
+                pattern1.CopyToDevice();
+                kernel.SetArgument(1, pattern1);
+                kernel.SetArgument(2, pattern2);
+            }
+            else      //tock
+            {
+                for (int i = 0; i < rle.W * rle.H; i++) pattern2[i] = 0U;
+                pattern2.CopyToDevice();
+                kernel.SetArgument(1, pattern2);
+                kernel.SetArgument(2, pattern1);
+            }
+            
+            kernel.SetArgument(3, rle.W);
+            kernel.SetArgument(4, rle.H);
+            kernel.SetArgument(5, res);
+
             // execute kernel
-            long[] workSize = { 512, 512 };
+            long[] workSize = { rle.W * 32, rle.H + (4 - rle.H % 4) };
             long[] localSize = { 32, 4 };
             if (GLInterop)
             {
@@ -66,12 +102,15 @@ namespace GameOfLife
                 // get the data from the device to the host
                 buffer.CopyFromDevice();
                 // plot pixels using the data on the host
-                for (int y = 0; y < 512; y++) for (int x = 0; x < 512; x++)
-                    {
-                        screen.pixels[x + y * screen.width] = buffer[x + y * 512];
-                    }
+                for (int y = 0; y < res.y; y++) for (int x = 0; x < res.x; x++)
+                {
+                    screen.pixels[x + y * res.x] = buffer[x + y * (int)rle.W];
+                }
             }
+
+            tock = !tock;
         }
+
         public void Render()
         {
             // use OpenGL to draw a quad using the texture that was filled by OpenCL
@@ -88,5 +127,4 @@ namespace GameOfLife
             }
         }
     }
-
-} // namespace Template
+}

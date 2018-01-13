@@ -18,6 +18,7 @@ namespace GameOfLife
         public int OpenGLTextureID;
         public ComputeImage2D texBuffer;
         T[] texData;
+
         public OpenCLImage(OpenCLProgram ocl, int width, int height)
         {
             texData = new T[width * height * 4];

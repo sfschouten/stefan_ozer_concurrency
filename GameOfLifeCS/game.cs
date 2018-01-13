@@ -95,7 +95,8 @@ class Game
 			// count active neighbors
 			uint n = GetBit( x - 1, y - 1 ) + GetBit( x, y - 1 ) + GetBit( x + 1, y - 1 ) + GetBit( x - 1, y ) + 
 					 GetBit( x + 1, y ) + GetBit( x - 1, y + 1 ) + GetBit( x, y + 1 ) + GetBit( x + 1, y + 1 );
-			if ((GetBit( x, y ) == 1 && n ==2) || n == 3) BitSet( x, y );
+			//if ((GetBit( x, y ) == 1 && n ==2) || n == 3) BitSet( x, y );
+            if (GetBit( x, y ) == 1) BitSet( x, y );
 		}
 		// swap buffers
 		for( int i = 0; i < pw * ph; i++ ) second[i] = pattern[i];
