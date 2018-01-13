@@ -1,10 +1,5 @@
 #define GLINTEROP
 
-void bit_set(__global uint* p, uint pw, uint x, uint y)
-{
-	p[y * pw + (x >> 5)] |= (1U << (x & 31U));
-}
-
 uint get_bit(__global uint* p, uint pw, uint x, uint y)
 {
 	return (p[y * pw + (x >> 5)] >> (x & 31U)) & 1U;
@@ -18,50 +13,55 @@ __kernel void simulateAndDraw(__global int* a,	      __global uint* ptrn, __glob
 {
 	uint w = pw * 32;
 
-	uint x = get_global_id(0);
-	uint y = get_global_id(1);
-	int i = x + w * y;
+	uint idx = get_global_id(0);
+	uint idy = get_global_id(1);
+	int id = idx + pw * idy;
 	
-
-
-	//Simulate
-	/*
-	if (x >= 1 && x < w - 1 && y >= 1 && y < ph - 1)
+	if (idx < pw && idy < ph)
 	{
-		uint n = get_bit(prev, pw, x - 1, y - 1)
-			+ get_bit(prev, pw, x, y - 1)
-			+ get_bit(prev, pw, x + 1, y - 1)
-			+ get_bit(prev, pw, x - 1, y)
-			+ get_bit(prev, pw, x + 1, y)
-			+ get_bit(prev, pw, x - 1, y + 1)
-			+ get_bit(prev, pw, x, y + 1)
-			+ get_bit(prev, pw, x + 1, y + 1);
+		uint v = 0;
+		for (int i = 0; i < 32; i++)
+		{
+			uint x = idx * 32 + i, y = idy;
 
-		if ( ( get_bit(prev, pw, x, y) && n == 2 ) || n == 3 )
-			bit_set(ptrn, pw, x, y);
-	}*/
-	bool b = false;
-	if (get_bit(prev, pw, x, y))
-	{
-		b = true;
-		bit_set(ptrn, pw, x, y);
-	}
+			bool b = false;
+			if (x >= 1 && x < w - 1 && y >= 1 && y < ph - 1)
+			{
+				uint n = get_bit(prev, pw, x - 1, y - 1)
+					+ get_bit(prev, pw, x, y - 1)
+					+ get_bit(prev, pw, x + 1, y - 1)
+					+ get_bit(prev, pw, x - 1, y)
+					+ get_bit(prev, pw, x + 1, y)
+					+ get_bit(prev, pw, x - 1, y + 1)
+					+ get_bit(prev, pw, x, y + 1)
+					+ get_bit(prev, pw, x + 1, y + 1);
 
-	//Draw
-	if (x < res.x && y < res.y)
-	{
-		float3 col = (float3)(0.f, 0.f, 0.f);
-		if (b)
-			col = (float3)(16.f, 16.f, 16.f);
+				if ((get_bit(prev, pw, x, y) && n == 2) || n == 3)
+				{
+					b = true;
+					v |= (1U << i);
+				}
+			}
 
-#ifdef GLINTEROP
-		int2 pos = (int2)(x, y);
-		write_imagef(a, pos, (float4)(col * (1.0f / 16.0f), 1.0f));
-#else
-		int r = (int)clamp(16.0f * col.x, 0.f, 255.f);
-		int g = (int)clamp(16.0f * col.y, 0.f, 255.f);
-		int b = (int)clamp(16.0f * col.z, 0.f, 255.f);
-		a[i] = (r << 16) + (g << 8) + b;
-#endif
+			//Draw
+			if (x < res.x && y < res.y)
+			{
+				float3 col = (float3)(0.f, 0.f, 0.f);
+				if (b)
+					col = (float3)(16.f, 16.f, 16.f);
+
+	#ifdef GLINTEROP
+				int2 pos = (int2)(x, y);
+				write_imagef(a, pos, (float4)(col * (1.0f / 16.0f), 1.0f));
+	#else
+				int r = (int)clamp(16.0f * col.x, 0.f, 255.f);
+				int g = (int)clamp(16.0f * col.y, 0.f, 255.f);
+				int b = (int)clamp(16.0f * col.z, 0.f, 255.f);
+				a[id] = (r << 16) + (g << 8) + b;
+	#endif
+			}
+		}
+
+		ptrn[id] = v;
 	}
 }

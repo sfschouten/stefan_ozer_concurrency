@@ -31,7 +31,9 @@ namespace GameOfLife
         public void Init()
         {
             rle = new RLEFile("../../data/turing_js_r.rle");
+            //rle = new RLEFile("../../data/metapixel-galaxy.rle");
             pattern1 = new OpenCLBuffer<uint>(ocl, (int)(rle.W * rle.H));
+            pattern1.CopyToDevice();
             pattern2 = rle.ToCLBuffer(ocl);
             pattern2.CopyToDevice();
 
@@ -57,15 +59,11 @@ namespace GameOfLife
 
             if (!tock)//tick
             {
-                for (int i = 0; i < rle.W * rle.H; i++) pattern1[i] = 0U;
-                pattern1.CopyToDevice();
                 kernel.SetArgument(1, pattern1);
                 kernel.SetArgument(2, pattern2);
             }
             else      //tock
             {
-                for (int i = 0; i < rle.W * rle.H; i++) pattern2[i] = 0U;
-                pattern2.CopyToDevice();
                 kernel.SetArgument(1, pattern2);
                 kernel.SetArgument(2, pattern1);
             }
@@ -75,7 +73,8 @@ namespace GameOfLife
             kernel.SetArgument(5, res);
 
             // execute kernel
-            long[] workSize = { rle.W * 32, rle.H + (4 - rle.H % 4) };
+            long[] workSize = { rle.W + (32 - rle.W % 32),
+                                rle.H + (4 - rle.H % 4)     };
             long[] localSize = { 32, 4 };
             if (GLInterop)
             {
