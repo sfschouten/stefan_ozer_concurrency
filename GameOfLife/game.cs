@@ -30,10 +30,38 @@ namespace GameOfLife
 
         Stopwatch timer = new Stopwatch();
         int generation = 0;
+        // mouse handling: dragging functionality
+        uint rleW, rleH;
+        uint xoffset = 0, yoffset = 0;
+        bool lastLButtonState = false;
+        int dragXStart, dragYStart, offsetXStart, offsetYStart;
+        public void SetMouseState(int x, int y, bool pressed)
+        {
+            if (pressed)
+            {
+                if (lastLButtonState)
+                {
+                    int deltax = x - dragXStart, deltay = y - dragYStart;
+                    xoffset = (uint)Math.Min(rleW * 32 - screen.width, Math.Max(0, offsetXStart - deltax));
+                    yoffset = (uint)Math.Min(rleH - screen.height, Math.Max(0, offsetYStart - deltay));
+                }
+                else
+                {
+                    dragXStart = x;
+                    dragYStart = y;
+                    offsetXStart = (int)xoffset;
+                    offsetYStart = (int)yoffset;
+                    lastLButtonState = true;
+                }
+            }
+            else lastLButtonState = false;
+        }
 
         public void Init()
         {
             rle = new RLEFile("../../data/turing_js_r.rle");
+            rleW = rle.W;
+            rleH = rle.H;
             //rle = new RLEFile("../../data/metapixel-galaxy.rle");
             pattern1 = new OpenCLBuffer<uint>(ocl, (int)(rle.W * rle.H));
             pattern1.CopyToDevice();
@@ -72,9 +100,11 @@ namespace GameOfLife
                 kernel.SetArgument(2, pattern1);
             }
             
-            kernel.SetArgument(3, rle.W);
-            kernel.SetArgument(4, rle.H);
+            kernel.SetArgument(3, rle.W );
+            kernel.SetArgument(4, rle.H );
             kernel.SetArgument(5, res);
+            kernel.SetArgument(6, xoffset);
+            kernel.SetArgument(7, yoffset);
 
             // execute kernel
             long[] workSize = { rle.W + (4 - rle.W % 4),

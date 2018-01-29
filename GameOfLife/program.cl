@@ -6,9 +6,9 @@ uint get_bit(__global uint* p, uint pw, uint x, uint y)
 }
 
 #ifdef GLINTEROP
-__kernel void simulateAndDraw(write_only image2d_t a, __global uint* ptrn, __global uint* prev, uint pw, uint ph, int2 res)
+__kernel void simulateAndDraw(write_only image2d_t a, __global uint* ptrn, __global uint* prev, uint pw, uint ph, int2 res, uint xoffset, uint yoffset)
 #else
-__kernel void simulateAndDraw(__global int* a,	      __global uint* ptrn, __global uint* prev, uint pw, uint ph, int2 res)
+__kernel void simulateAndDraw(__global int* a,	      __global uint* ptrn, __global uint* prev, uint pw, uint ph, int2 res, uint xoffset, uint yoffset)
 #endif
 {
 	uint w = pw * 32;
@@ -43,14 +43,14 @@ __kernel void simulateAndDraw(__global int* a,	      __global uint* ptrn, __glob
 			}
 
 			//Draw
-			if (x < res.x && y < res.y)
+			if (x - xoffset < res.x && y - yoffset < res.y)
 			{
 				float3 col = (float3)(0.f, 0.f, 0.f);
 				if (b)
 					col = (float3)(16.f, 16.f, 16.f);
 
 	#ifdef GLINTEROP
-				int2 pos = (int2)(x, y);
+				int2 pos = (int2)(x - xoffset, y - yoffset);
 				write_imagef(a, pos, (float4)(col * (1.0f / 16.0f), 1.0f));
 	#else
 				int r = (int)clamp(16.0f * col.x, 0.f, 255.f);
