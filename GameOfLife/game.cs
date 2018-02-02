@@ -28,9 +28,7 @@ namespace GameOfLife
 
         Stopwatch timer = new Stopwatch();
         int generation = 0;
-
-        // mouse handling: dragging functionality
-        uint rleW, rleH;
+        
         uint xoffset = 0, yoffset = 0;
         bool lastLButtonState = false;
         int dragXStart, dragYStart, offsetXStart, offsetYStart;
@@ -43,15 +41,14 @@ namespace GameOfLife
                 zoom = 1f;
 
             lastWheel = wheel;
-
-
+            
             if (pressed)
             {
                 if (lastLButtonState)
                 {
                     int deltax = x - dragXStart, deltay = y - dragYStart;
-                    xoffset = (uint)Math.Min(rleW * 32 - screen.width, Math.Max(0, offsetXStart - deltax));
-                    yoffset = (uint)Math.Min(rleH - screen.height, Math.Max(0, offsetYStart - deltay));
+                    xoffset = (uint)Math.Min(rle.W * 32 - screen.width, Math.Max(0, offsetXStart - deltax));
+                    yoffset = (uint)Math.Min(rle.H - screen.height, Math.Max(0, offsetYStart - deltay));
                 }
                 else
                 {
@@ -68,8 +65,6 @@ namespace GameOfLife
         public void Init()
         {
             rle = new RLEFile("../../data/turing_js_r.rle");
-            rleW = rle.W;
-            rleH = rle.H;
             //rle = new RLEFile("../../data/metapixel-galaxy.rle");
             pattern1 = new OpenCLBuffer<uint>(ocl, (int)(rle.W * rle.H));
             pattern1.CopyToDevice();
@@ -78,8 +73,6 @@ namespace GameOfLife
 
             //create an OpenGL texture to which OpenCL can send data
             image = new OpenCLImage<int>(ocl, res.x, res.y);
-            //image = new OpenCLImage<int>(ocl, (int)rleW, (int)rleH);
-            
         }
 
         public void Tick()
