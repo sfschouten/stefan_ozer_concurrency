@@ -73,7 +73,7 @@ namespace GameOfLife
                 this.Exit();
             var mouse = OpenTK.Input.Mouse.GetState();
             Point p = CursorPosition.GetCursorPosition();
-            game.SetMouseState(p.X, p.Y, mouse.LeftButton == ButtonState.Pressed);
+            game.SetMouseState(p.X, p.Y, mouse.LeftButton == ButtonState.Pressed, mouse.WheelPrecise);
         }
         protected override void OnRenderFrame(FrameEventArgs e)
         {
